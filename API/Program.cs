@@ -12,7 +12,21 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Configure CORS (Cross-Origin Resource Sharing) to allow requests from the React frontend
+builder.Services.AddCors(options =>
+    options.AddPolicy("CorsPolicy",
+        builder => builder
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .WithOrigins("http://localhost:3000", "https://localhost:3000") // Allow requests from the React app running on these origins
+            .AllowCredentials() // Allow credentials (cookies, authorization headers, etc.)
+    )
+);
+
+// Build the WebApplication instance from the configured builder
 var app = builder.Build();
+
+app.UseCors("CorsPolicy"); // Apply the CORS policy to the application
 
 // Configure the HTTP request pipeline.
 app.MapControllers();
