@@ -1,3 +1,5 @@
+using Application.Activities.Queries;
+using Application.Core;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
@@ -22,6 +24,13 @@ builder.Services.AddCors(options =>
             .AllowCredentials() // Allow credentials (cookies, authorization headers, etc.)
     )
 );
+
+// Register MediatR services from the current assembly
+builder.Services.AddMediatR(cfg => 
+    cfg.RegisterServicesFromAssemblyContaining<GetActivityList>());
+
+// Register AutoMapper services from the current assembly
+builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 
 // Build the WebApplication instance from the configured builder
 var app = builder.Build();
