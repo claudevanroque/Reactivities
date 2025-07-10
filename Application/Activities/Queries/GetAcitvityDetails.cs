@@ -14,7 +14,7 @@ public class GetAcitvityDetails
 	}
 
 
-	public class Handler(AppDbContext _context, ILogger<GetActivityList> logger) : IRequestHandler<Query, Activity>
+	public class Handler(AppDbContext _context) : IRequestHandler<Query, Activity>
 	{
 		public async Task<Activity> Handle(Query request, CancellationToken cancellationToken)
 		{
