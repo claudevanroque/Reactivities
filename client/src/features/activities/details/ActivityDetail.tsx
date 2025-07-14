@@ -1,13 +1,18 @@
 import { formatDateAndTime } from "../../../lib/Helpers/helpers";
 import { Button, Card, CardActions, CardContent, CardMedia, Typography } from "@mui/material";
+import { useActivity } from "../../../lib/hooks/useActitvity";
 
 type Props = {
-	activity: Activity;
+	selectedActivity: Activity;
 	cancelSelectActivity: () => void;
 	openForm: (id?: string) => void;
 }
 
-export default function ActivityDetail({activity, cancelSelectActivity, openForm}: Props) {
+export default function ActivityDetail({selectedActivity, cancelSelectActivity, openForm}: Props) {
+	const {activities} = useActivity();
+	const activity = activities?.find(a => a.id === selectedActivity.id);
+
+	if (!activity) return <Typography variant="h6" color="error">Activity not found</Typography>;
 	return (
 		<Card sx={{borderRadius: 3}}>
 			<CardMedia

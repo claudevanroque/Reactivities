@@ -1,14 +1,15 @@
 import { Box, Button, Paper, TextField, Typography } from "@mui/material";
 import { getDateInputValue } from "../../../lib/Helpers/helpers";
+import { useActivity } from "../../../lib/hooks/useActitvity";
 
 type Props = {
 	closeForm: () => void;
 	activity?: Activity;
-	submitForm: (activity: Activity) => void;
 }
 
-export default function ActivityForm({ closeForm, activity, submitForm }: Props) {
-	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+export default function ActivityForm({ closeForm, activity }: Props) {
+	const {updateActivity, createActivity} = useActivity();
+	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		// Handle form submission logic here
 		const formData = new FormData(event.currentTarget);
@@ -18,9 +19,14 @@ export default function ActivityForm({ closeForm, activity, submitForm }: Props)
 			data[key] = value;
 		});
 
-		if (activity) data.id = activity.id; // Include id if editing an existing activity
-
-		submitForm(data as unknown as Activity);
+		if (activity) {
+			data.id = activity.id; // Ensure the ID is included for updates
+			await updateActivity.mutateAsync(data as unknown as Activity);
+			closeForm();
+		}else{
+			await createActivity.mutateAsync(data as unknown as Activity);
+			closeForm();
+		}
 	};
 	return (
 		<Paper sx={{ padding: 3, borderRadius: 3 }}>
@@ -72,7 +78,12 @@ export default function ActivityForm({ closeForm, activity, submitForm }: Props)
 					<Button onClick={closeForm} color="inherit">
 						Cancel
 					</Button>
-					<Button type="submit" variant="contained" color="success">
+					<Button 
+						type="submit" 
+						variant="contained" 
+						color="success"
+						disabled={updateActivity.isPending || createActivity.isPending}
+						>
 						Submit
 					</Button>
 				</Box>
