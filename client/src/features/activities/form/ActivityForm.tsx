@@ -1,5 +1,4 @@
 import { Box, Button, Paper, TextField, Typography } from "@mui/material";
-import { getDateInputValue } from "../../../lib/Helpers/helpers";
 import { useActivity } from "../../../lib/hooks/useActitvity";
 import { useParams, useNavigate, Link } from "react-router";
 
@@ -66,7 +65,7 @@ export default function ActivityForm() {
 					label="Date"
 					name="date"
 					type="date"
-					defaultValue={getDateInputValue(activity?.date)}
+					defaultValue={(activity?.date)}
 					InputLabelProps={{ shrink: true }}
 				/>
 				<TextField
