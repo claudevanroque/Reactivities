@@ -1,5 +1,8 @@
+using API.Middleware;
 using Application.Activities.Queries;
+using Application.Activities.Validators;
 using Application.Core;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
@@ -26,14 +29,26 @@ builder.Services.AddCors(options =>
 );
 
 // Register MediatR services from the current assembly
-builder.Services.AddMediatR(cfg => 
-    cfg.RegisterServicesFromAssemblyContaining<GetActivityList>());
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssemblyContaining<GetActivityList>();
+    cfg.AddOpenBehavior(typeof(ValidationsBehavior<,>)); // Register the ValidationsBehavior for request validation
+});
 
 // Register AutoMapper services from the current assembly
 builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 
+// Register FluentValidation services
+builder.Services.AddValidatorsFromAssemblyContaining<CreateActivityValidator>();
+
+// Register the ExceptionMiddleware to handle exceptions globally
+builder.Services.AddTransient<ExceptionMiddleware>();
+
 // Build the WebApplication instance from the configured builder
 var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+app.UseMiddleware<ExceptionMiddleware>(); // Use the ExceptionMiddleware to handle exceptions globally
 
 app.UseCors("CorsPolicy"); // Apply the CORS policy to the application
 

@@ -1,5 +1,6 @@
 
 using Application.Activities.Commands;
+using Application.Activities.DTOs;
 using Application.Activities.Queries;
 using Domain.Entities;
 using MediatR;
@@ -20,26 +21,25 @@ public class ActivitiesController() : BaseApiController
 	[HttpGet("{id}")]
 	public async Task<ActionResult<Activity>> GetActivity(string id)
 	{
-		return await Mediator.Send(new GetAcitvityDetails.Query { Id = id });
+		// throw new Exception("This is a test exception to check the exception middleware.");
+		return HandleResult(await Mediator.Send(new GetActivityDetails.Query { Id = id }));
 	}
 
 	[HttpPost]
-	public async Task<ActionResult<string>> CreateActivity(Activity activity)
+	public async Task<ActionResult<string>> CreateActivity(CreateActivityDto createActivityDto)
 	{
-		return await Mediator.Send(new CreateActivity.Command { Activity = activity });
+		return HandleResult(await Mediator.Send(new CreateActivity.Command { ActivityDto = createActivityDto }));
 	}
 
 	[HttpPut]
-	public async Task<IActionResult> EditActivity(Activity activity)
+	public async Task<IActionResult> EditActivity(EditActivityDto editActivityDto)
 	{
-		await Mediator.Send(new EditActivity.Command { Activity = activity });
-		return NoContent();
+		return HandleResult(await Mediator.Send(new EditActivity.Command { ActivityDto = editActivityDto }));
 	}
 
 	[HttpDelete("{id}")]
 	public async Task<IActionResult> DeleteActivity(string id)
 	{
-		await Mediator.Send(new DeleteActivity.Command { Id = id });
-		return Ok();
+		return HandleResult(await Mediator.Send(new DeleteActivity.Command { Id = id }));
 	}
 }
